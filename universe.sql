@@ -1,402 +1,486 @@
-camper: /project$ psql --username=freecodecamp --dbname=postgres
-Border style is 2.
-Pager usage is off.
-psql (12.17 (Ubuntu 12.17-1.pgdg22.04+1))
-SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
-Type "help" for help.
+--
+-- PostgreSQL database dump
+--
 
-postgres=> \c universe
-connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "universe" does not exist
-Previous connection kept
-postgres=> \c universe;
-connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "universe" does not exist
-Previous connection kept
-postgres=> CREATE DATABASE universe;
-CREATE DATABASE
-postgres=> \c universe
-SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
-You are now connected to database "universe" as user "freecodecamp".
-universe=> CREATE TABLE galaxy (galaxy_id SERIAL PRIMARY KEY NOT NULL, speed INT, description TEXT);
-CREATE TABLE
-universe=> CREATE TABLE star(star_id PRIMARY KEY SERIAL NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, CONSTRAINT fk_galaxy FOREIGN KEY(galaxy_id) REFERENCES galaxy(galaxy_id));
-ERROR:  syntax error at or near "PRIMARY"
-LINE 1: CREATE TABLE star(star_id PRIMARY KEY SERIAL NOT NULL, radiu...
-                                  ^
-universe=> CREATE TABLE star(star_id SERIAL PRIMARY KEY  NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, CONSTRAINT fk_galaxy
-FOREIGN KEY(galaxy_id) REFERENCES galaxy(galaxy_id));
-ERROR:  column "galaxy_id" referenced in foreign key constraint does not exist
-universe=> CREATE TABLE star(star_id SERIAL PRIMARY KEY  NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, galaxy_id INT CONSTRA
-INT fk_galaxy FOREIGN KEY(galaxy_id) REFERENCES galaxy(galaxy_id));
-ERROR:  syntax error at or near "FOREIGN"
-LINE 1: ...255) NOT NULL, galaxy_id INT CONSTRAINT fk_galaxy FOREIGN KE...
-                                                             ^
-universe=> CREATE TABLE star(star_id SERIAL PRIMARY KEY  NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, galaxy_id INT CONSTRAINT, fk_galaxy FOREIGN KEY(galaxy_id) REFERENCES galaxy(galaxy_id));
-ERROR:  syntax error at or near ","
-LINE 1: ...me VARCHAR(255) NOT NULL, galaxy_id INT CONSTRAINT, fk_galax...
-                                                             ^
-universe=> CREATE TABLE star(star_id SERIAL PRIMARY KEY  NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, galaxy_id INT CONSTR
-ERROR:  syntax error at or near "CONSTR"CES galaxy(galaxy_id));
-LINE 1: ...T NULL, name VARCHAR(255) NOT NULL, galaxy_id INT CONSTR fk_...
-                                                             ^
-universe=> CREATE TABLE star(star_id SERIAL PRIMARY KEY  NOT NULL, radius INT NOT NULL, color VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, galaxy_id INT, CONSTRAINT fk_galaxy FOREIGN KEY(galaxy_id) REFERENCES galaxy(galaxy_id));
-CREATE TABLE
-universe=> \d galaxy
-                                   Table "public.galaxy"
-+-------------+---------+-----------+----------+-------------------------------------------+
-|   Column    |  Type   | Collation | Nullable |                  Default                  |
-+-------------+---------+-----------+----------+-------------------------------------------+
-| galaxy_id   | integer |           | not null | nextval('galaxy_galaxy_id_seq'::regclass) |
-| speed       | integer |           |          |                                           |
-| description | text    |           |          |                                           |
-+-------------+---------+-----------+----------+-------------------------------------------+
-Indexes:
-    "galaxy_pkey" PRIMARY KEY, btree (galaxy_id)
-Referenced by:
-    TABLE "star" CONSTRAINT "fk_galaxy" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+-- Dumped from database version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
+-- Dumped by pg_dump version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
 
-universe=> \d star
-                                         Table "public.star"
-+-----------+------------------------+-----------+----------+---------------------------------------+
-|  Column   |          Type          | Collation | Nullable |                Default                |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-| star_id   | integer                |           | not null | nextval('star_star_id_seq'::regclass) |
-| radius    | integer                |           | not null |                                       |
-| color     | character varying(255) |           | not null |                                       |
-| name      | character varying(255) |           | not null |                                       |
-| galaxy_id | integer                |           |          |                                       |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-Indexes:
-    "star_pkey" PRIMARY KEY, btree (star_id)
-Foreign-key constraints:
-    "fk_galaxy" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
-universe=> ALTER TABLE galaxy ADD COLUMN name VARCHAR(255) NOT NULL;
-ALTER TABLE
-universe=> \d galaxy
-                                           Table "public.galaxy"
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-|   Column    |          Type          | Collation | Nullable |                  Default                  |
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-| galaxy_id   | integer                |           | not null | nextval('galaxy_galaxy_id_seq'::regclass) |
-| speed       | integer                |           |          |                                           |
-| description | text                   |           |          |                                           |
-| name        | character varying(255) |           | not null |                                           |
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-Indexes:
-    "galaxy_pkey" PRIMARY KEY, btree (galaxy_id)
-Referenced by:
-    TABLE "star" CONSTRAINT "fk_galaxy" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+DROP DATABASE universe;
+--
+-- Name: universe; Type: DATABASE; Schema: -; Owner: freecodecamp
+--
 
-universe=> CREATE TABLE planet(planet_id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(255) NOT NULL, amount_of_people NUMERIC, time_travel boolean DEFAULT(0) NOT NULL, star_id INT NOT NULL, CONSTRAINT fk_star FOREIGN KEY(star_id) REFERENCES star(star_id));
-ERROR:  column "time_travel" is of type boolean but default expression is of type integer
-HINT:  You will need to rewrite or cast the expression.
-universe=> CREATE TABLE planet(planet_id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(255) NOT NULL, amount_of_people NUMERIC, time_travel boolean DEFAULT(false) NOT NULL, st
-ar_id INT NOT NULL, CONSTRAINT fk_star FOREIGN KEY(star_id) REFERENCES star(star_id));
-CREATE TABLE
-universe=> \d planet
-                                             Table "public.planet"
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-|      Column      |          Type          | Collation | Nullable |                  Default                  |
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-| planet_id        | integer                |           | not null | nextval('planet_planet_id_seq'::regclass) |
-| name             | character varying(255) |           | not null |                                           |
-| amount_of_people | numeric                |           |          |                                           |
-| time_travel      | boolean                |           | not null | false                                     |
-| star_id          | integer                |           | not null |                                           |
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-Indexes:
-    "planet_pkey" PRIMARY KEY, btree (planet_id)
-Foreign-key constraints:
-    "fk_star" FOREIGN KEY (star_id) REFERENCES star(star_id)
+CREATE DATABASE universe WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C.UTF-8' LC_CTYPE = 'C.UTF-8';
 
-universe=> CREATE TABLE moon(moon_id SERIAL PRIMARY NOT NULL, name VARCHAR(255) NOT NULL, name_code VARCHAR(255) UNIQUE, has_water boolean NOT NULL, planet_id INT NOT NULL, CONSTRAINT fk_planet FOREIGN KEY(planet_id) REFERENCES planet(planet_id));
-ERROR:  syntax error at or near "NOT"
-LINE 1: CREATE TABLE moon(moon_id SERIAL PRIMARY NOT NULL, name VARC...
-                                                 ^
-universe=> CREATE TABLE moon(moon_id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(255) NOT NULL, name_code VARCHAR(255) UNIQUE, has_water boolean NOT NULL, planet_id INT NOT
-NULL,
-CREATE TABLE
-universe=> \d moon
-                                         Table "public.moon"
-+-----------+------------------------+-----------+----------+---------------------------------------+
-|  Column   |          Type          | Collation | Nullable |                Default                |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-| moon_id   | integer                |           | not null | nextval('moon_moon_id_seq'::regclass) |
-| name      | character varying(255) |           | not null |                                       |
-| name_code | character varying(255) |           |          |                                       |
-| has_water | boolean                |           | not null |                                       |
-| planet_id | integer                |           | not null |                                       |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-Indexes:
-    "moon_pkey" PRIMARY KEY, btree (moon_id)
-    "moon_name_code_key" UNIQUE CONSTRAINT, btree (name_code)
-Foreign-key constraints:
-    "fk_planet" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
 
-universe=> ALTER TABLE moon DROP COLUMN name_code;
-ALTER TABLE
-universe=> ALTER TABLE moon ADD COLUMN name_code VARCHAR(255) UNIQUE NOT NULL;
-ALTER TABLE
-universe=> \d moon
-                                         Table "public.moon"
-+-----------+------------------------+-----------+----------+---------------------------------------+
-|  Column   |          Type          | Collation | Nullable |                Default                |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-| moon_id   | integer                |           | not null | nextval('moon_moon_id_seq'::regclass) |
-| name      | character varying(255) |           | not null |                                       |
-| has_water | boolean                |           | not null |                                       |
-| planet_id | integer                |           | not null |                                       |
-| name_code | character varying(255) |           | not null |                                       |
-+-----------+------------------------+-----------+----------+---------------------------------------+
-Indexes:
-    "moon_pkey" PRIMARY KEY, btree (moon_id)
-    "moon_name_code_key" UNIQUE CONSTRAINT, btree (name_code)
-Foreign-key constraints:
-    "fk_planet" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
+ALTER DATABASE universe OWNER TO freecodecamp;
 
-universe=> CREATE TABLE blackhole(blackhole_id SERIAL PRIMARY KEY NOT NULL, gravity INT, galaxy_id INT, wormhole BOOLEAN DEFAULT(false) NOT NULL);
-CREATE TABLE
-universe=> \d 
-                        List of relations
-+--------+----------------------------+----------+--------------+
-| Schema |            Name            |   Type   |    Owner     |
-+--------+----------------------------+----------+--------------+
-| public | blackhole                  | table    | freecodecamp |
-| public | blackhole_blackhole_id_seq | sequence | freecodecamp |
-| public | galaxy                     | table    | freecodecamp |
-| public | galaxy_galaxy_id_seq       | sequence | freecodecamp |
-| public | moon                       | table    | freecodecamp |
-| public | moon_moon_id_seq           | sequence | freecodecamp |
-| public | planet                     | table    | freecodecamp |
-| public | planet_planet_id_seq       | sequence | freecodecamp |
-| public | star                       | table    | freecodecamp |
-| public | star_star_id_seq           | sequence | freecodecamp |
-+--------+----------------------------+----------+--------------+
-(10 rows)
+\connect universe
 
-universe=> \d galaxy
-                                           Table "public.galaxy"
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-|   Column    |          Type          | Collation | Nullable |                  Default                  |
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-| galaxy_id   | integer                |           | not null | nextval('galaxy_galaxy_id_seq'::regclass) |
-| speed       | integer                |           |          |                                           |
-| description | text                   |           |          |                                           |
-| name        | character varying(255) |           | not null |                                           |
-+-------------+------------------------+-----------+----------+-------------------------------------------+
-Indexes:
-    "galaxy_pkey" PRIMARY KEY, btree (galaxy_id)
-Referenced by:
-    TABLE "star" CONSTRAINT "fk_galaxy" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
-universe=> INSERT INTO galaxy(name) VALUES ('zooby');
-INSERT 0 1
-universe=> SELECT * FROM galaxyl
-universe-> SELECT * FROM galaxy;
-ERROR:  syntax error at or near "SELECT"
-LINE 2: SELECT * FROM galaxy;
-        ^
-universe=> SELECT * FROM galaxy;
-+-----------+-------+-------------+-------+
-| galaxy_id | speed | description | name  |
-+-----------+-------+-------------+-------+
-|         1 |       |             | zooby |
-+-----------+-------+-------------+-------+
-(1 row)
+SET default_tablespace = '';
 
-universe=> INSERT INTO galaxy(name) VALUES ('louis');
-INSERT 0 1
-universe=> INSERT INTO galaxy(name) VALUES ('armour');
-INSERT 0 1
-universe=> INSERT INTO galaxy(name) VALUES ('zoe');
-INSERT 0 1
-universe=> INSERT INTO galaxy(name) VALUES ('mcgonigle');
-INSERT 0 1
-universe=> INSERT INTO galaxy(name) VALUES ('suuai');
-INSERT 0 1
-universe=> SELECT * FROM galaxy;
-+-----------+-------+-------------+-----------+
-| galaxy_id | speed | description |   name    |
-+-----------+-------+-------------+-----------+
-|         1 |       |             | zooby     |
-|         2 |       |             | louis     |
-|         3 |       |             | armour    |
-|         4 |       |             | zoe       |
-|         5 |       |             | mcgonigle |
-|         6 |       |             | suuai     |
-+-----------+-------+-------------+-----------+
-(6 rows)
+SET default_table_access_method = heap;
 
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'red', 'beatlejuice', 1);
-INSERT 0 1
-universe=> SELECT * FROM star
-universe-> SELECT * FROM star;
-ERROR:  syntax error at or near "SELECT"
-LINE 2: SELECT * FROM star;
-        ^
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'red', 'millan', 1);
-INSERT 0 1
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'red', 'bell', 1);
-INSERT 0 1
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'red', 'laaw', 1);
-INSERT 0 1
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'orange', 'lissa', 1);
-INSERT 0 1
-universe=> INSERT INTO star(radius, color, name, galaxy_id) VALUES(123453123, 'yellow', 'dobson', 1);
-INSERT 0 1
-universe=> SELECT * FROM star;
-+---------+-----------+--------+-------------+-----------+
-| star_id |  radius   | color  |    name     | galaxy_id |
-+---------+-----------+--------+-------------+-----------+
-|       1 | 123453123 | red    | beatlejuice |         1 |
-|       2 | 123453123 | red    | millan      |         1 |
-|       3 | 123453123 | red    | bell        |         1 |
-|       4 | 123453123 | red    | laaw        |         1 |
-|       5 | 123453123 | orange | lissa       |         1 |
-|       6 | 123453123 | yellow | dobson      |         1 |
-+---------+-----------+--------+-------------+-----------+
-(6 rows)
+--
+-- Name: blackhole; Type: TABLE; Schema: public; Owner: freecodecamp
+--
 
-universe=> \d planet
-                                             Table "public.planet"
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-|      Column      |          Type          | Collation | Nullable |                  Default                  |
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-| planet_id        | integer                |           | not null | nextval('planet_planet_id_seq'::regclass) |
-| name             | character varying(255) |           | not null |                                           |
-| amount_of_people | numeric                |           |          |                                           |
-| time_travel      | boolean                |           | not null | false                                     |
-| star_id          | integer                |           | not null |                                           |
-+------------------+------------------------+-----------+----------+-------------------------------------------+
-Indexes:
-    "planet_pkey" PRIMARY KEY, btree (planet_id)
-Foreign-key constraints:
-    "fk_star" FOREIGN KEY (star_id) REFERENCES star(star_id)
-Referenced by:
-    TABLE "moon" CONSTRAINT "fk_planet" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
+CREATE TABLE public.blackhole (
+    blackhole_id integer NOT NULL,
+    gravity integer,
+    galaxy_id integer,
+    wormhole boolean DEFAULT false NOT NULL,
+    name character varying(255) NOT NULL
+);
 
-universe=> INSERT INTO planet(name, star_id) VALUES('earth' 1);
-ERROR:  syntax error at or near "1"
-LINE 1: INSERT INTO planet(name, star_id) VALUES('earth' 1);
-                                                         ^
-universe=> INSERT INTO planet(name, star_id) VALUES('earth', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('neptune', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('mars', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('uranus', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('venus', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('saturn', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('pluto', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('jupitar', 1);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('waflle', 2);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('tracer', 2);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('winston', 3);
-INSERT 0 1
-universe=> SELECT * FROM planet
-universe-> SELECT * FROM planet;
-ERROR:  syntax error at or near "SELECT"
-LINE 2: SELECT * FROM planet;
-        ^
-universe=> 
-SELECT * FROM planet;
-universe=> 
-universe=> SELECT * FROM planet;
-+-----------+---------+------------------+-------------+---------+
-| planet_id |  name   | amount_of_people | time_travel | star_id |
-+-----------+---------+------------------+-------------+---------+
-|         1 | earth   |                  | f           |       1 |
-|         2 | neptune |                  | f           |       1 |
-|         3 | mars    |                  | f           |       1 |
-|         4 | uranus  |                  | f           |       1 |
-|         5 | venus   |                  | f           |       1 |
-|         6 | saturn  |                  | f           |       1 |
-|         7 | pluto   |                  | f           |       1 |
-|         8 | jupitar |                  | f           |       1 |
-|         9 | waflle  |                  | f           |       2 |
-|        10 | tracer  |                  | f           |       2 |
-|        11 | winston |                  | f           |       3 |
-+-----------+---------+------------------+-------------+---------+
-(11 rows)
 
-universe=> INSERT INTO planet(name, star_id) VALUES('roadhog', 3);
-INSERT 0 1
-universe=> INSERT INTO planet(name, star_id) VALUES('reinhardt', 3);
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES(
-universe(> 
-universe(> INSERT INTO planet(name, star_id) VALUES('reinhardt', 3);
-universe(> INSERT INTO planet(name, star_id) VALUES('reinhardt', 3);
-universe(> SELECT * FROM planet;
-universe(> clear
-universe(> --help
-universe(> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon1', true, 2, 'moon1');
-universe(> );
-ERROR:  syntax error at or near "INTO"
-LINE 2: INSERT INTO planet(name, star_id) VALUES('reinhardt', 3);
-               ^
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon1', true, 2, 'moon1');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon2', true, 3, 'moon2');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon3', true, 4, 'moon3');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon4');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon5');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon6');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon7');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon8');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon9');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon10');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon11');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon12');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon13');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon14');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon15');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon16');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon17');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon18');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon19');
-INSERT 0 1
-universe=> INSERT INTO moon(name, has_water, planet_id, name_code) VALUES('moon4', true, 5, 'moon20');
-INSERT 0 1
-universe=> ALTER TABLE galaxy ADD COLUMN rotation_speed INT NOT NULL DEFAULT(100000);
-ALTER TABLE
-universe=> SELECT * FROM galaxy
-universe-> ;
-+-----------+-------+-------------+-----------+----------------+
-| galaxy_id | speed | description |   name    | rotation_speed |
-+-----------+-------+-------------+-----------+----------------+
-|         1 |       |             | zooby     |         100000 |
-|         2 |       |             | louis     |         100000 |
-|         3 |       |             | armour    |         100000 |
-|         4 |       |             | zoe       |         100000 |
-|         5 |       |             | mcgonigle |         100000 |
-|         6 |       |             | suuai     |         100000 |
-+-----------+-------+-------------+-----------+----------------+
-(6 rows)
+ALTER TABLE public.blackhole OWNER TO freecodecamp;
 
-universe=> 
+--
+-- Name: blackhole_blackhole_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.blackhole_blackhole_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.blackhole_blackhole_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: blackhole_blackhole_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.blackhole_blackhole_id_seq OWNED BY public.blackhole.blackhole_id;
+
+
+--
+-- Name: galaxy; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.galaxy (
+    galaxy_id integer NOT NULL,
+    speed integer,
+    description text,
+    name character varying(255) NOT NULL,
+    rotation_speed integer DEFAULT 100000 NOT NULL
+);
+
+
+ALTER TABLE public.galaxy OWNER TO freecodecamp;
+
+--
+-- Name: galaxy_galaxy_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.galaxy_galaxy_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.galaxy_galaxy_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: galaxy_galaxy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
+
+
+--
+-- Name: moon; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.moon (
+    moon_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    has_water boolean NOT NULL,
+    planet_id integer NOT NULL,
+    name_code character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.moon OWNER TO freecodecamp;
+
+--
+-- Name: moon_moon_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.moon_moon_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.moon_moon_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: moon_moon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.moon_moon_id_seq OWNED BY public.moon.moon_id;
+
+
+--
+-- Name: planet; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.planet (
+    planet_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    amount_of_people numeric,
+    time_travel boolean DEFAULT false NOT NULL,
+    star_id integer NOT NULL
+);
+
+
+ALTER TABLE public.planet OWNER TO freecodecamp;
+
+--
+-- Name: planet_planet_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.planet_planet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.planet_planet_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: planet_planet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.planet_planet_id_seq OWNED BY public.planet.planet_id;
+
+
+--
+-- Name: star; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.star (
+    star_id integer NOT NULL,
+    radius integer NOT NULL,
+    color character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    galaxy_id integer
+);
+
+
+ALTER TABLE public.star OWNER TO freecodecamp;
+
+--
+-- Name: star_star_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.star_star_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.star_star_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: star_star_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.star_star_id_seq OWNED BY public.star.star_id;
+
+
+--
+-- Name: blackhole blackhole_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.blackhole ALTER COLUMN blackhole_id SET DEFAULT nextval('public.blackhole_blackhole_id_seq'::regclass);
+
+
+--
+-- Name: galaxy galaxy_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy ALTER COLUMN galaxy_id SET DEFAULT nextval('public.galaxy_galaxy_id_seq'::regclass);
+
+
+--
+-- Name: moon moon_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.moon ALTER COLUMN moon_id SET DEFAULT nextval('public.moon_moon_id_seq'::regclass);
+
+
+--
+-- Name: planet planet_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet ALTER COLUMN planet_id SET DEFAULT nextval('public.planet_planet_id_seq'::regclass);
+
+
+--
+-- Name: star star_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.star_star_id_seq'::regclass);
+
+
+--
+-- Data for Name: blackhole; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.blackhole VALUES (1, NULL, NULL, false, 'bh1');
+INSERT INTO public.blackhole VALUES (2, NULL, NULL, false, 'bh2');
+INSERT INTO public.blackhole VALUES (3, NULL, NULL, false, 'bh3');
+
+
+--
+-- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.galaxy VALUES (1, NULL, NULL, 'zooby', 100000);
+INSERT INTO public.galaxy VALUES (2, NULL, NULL, 'louis', 100000);
+INSERT INTO public.galaxy VALUES (3, NULL, NULL, 'armour', 100000);
+INSERT INTO public.galaxy VALUES (4, NULL, NULL, 'zoe', 100000);
+INSERT INTO public.galaxy VALUES (5, NULL, NULL, 'mcgonigle', 100000);
+INSERT INTO public.galaxy VALUES (6, NULL, NULL, 'suuai', 100000);
+
+
+--
+-- Data for Name: moon; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.moon VALUES (1, 'moon1', true, 2, 'moon1');
+INSERT INTO public.moon VALUES (2, 'moon2', true, 3, 'moon2');
+INSERT INTO public.moon VALUES (3, 'moon3', true, 4, 'moon3');
+INSERT INTO public.moon VALUES (4, 'moon4', true, 5, 'moon4');
+INSERT INTO public.moon VALUES (5, 'moon4', true, 5, 'moon5');
+INSERT INTO public.moon VALUES (6, 'moon4', true, 5, 'moon6');
+INSERT INTO public.moon VALUES (7, 'moon4', true, 5, 'moon7');
+INSERT INTO public.moon VALUES (8, 'moon4', true, 5, 'moon8');
+INSERT INTO public.moon VALUES (9, 'moon4', true, 5, 'moon9');
+INSERT INTO public.moon VALUES (10, 'moon4', true, 5, 'moon10');
+INSERT INTO public.moon VALUES (11, 'moon4', true, 5, 'moon11');
+INSERT INTO public.moon VALUES (12, 'moon4', true, 5, 'moon12');
+INSERT INTO public.moon VALUES (13, 'moon4', true, 5, 'moon13');
+INSERT INTO public.moon VALUES (14, 'moon4', true, 5, 'moon14');
+INSERT INTO public.moon VALUES (15, 'moon4', true, 5, 'moon15');
+INSERT INTO public.moon VALUES (16, 'moon4', true, 5, 'moon16');
+INSERT INTO public.moon VALUES (17, 'moon4', true, 5, 'moon17');
+INSERT INTO public.moon VALUES (18, 'moon4', true, 5, 'moon18');
+INSERT INTO public.moon VALUES (19, 'moon4', true, 5, 'moon19');
+INSERT INTO public.moon VALUES (20, 'moon4', true, 5, 'moon20');
+
+
+--
+-- Data for Name: planet; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.planet VALUES (1, 'earth', NULL, false, 1);
+INSERT INTO public.planet VALUES (2, 'neptune', NULL, false, 1);
+INSERT INTO public.planet VALUES (3, 'mars', NULL, false, 1);
+INSERT INTO public.planet VALUES (4, 'uranus', NULL, false, 1);
+INSERT INTO public.planet VALUES (5, 'venus', NULL, false, 1);
+INSERT INTO public.planet VALUES (6, 'saturn', NULL, false, 1);
+INSERT INTO public.planet VALUES (7, 'pluto', NULL, false, 1);
+INSERT INTO public.planet VALUES (8, 'jupitar', NULL, false, 1);
+INSERT INTO public.planet VALUES (9, 'waflle', NULL, false, 2);
+INSERT INTO public.planet VALUES (10, 'tracer', NULL, false, 2);
+INSERT INTO public.planet VALUES (11, 'winston', NULL, false, 3);
+INSERT INTO public.planet VALUES (12, 'roadhog', NULL, false, 3);
+INSERT INTO public.planet VALUES (13, 'reinhardt', NULL, false, 3);
+
+
+--
+-- Data for Name: star; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.star VALUES (1, 123453123, 'red', 'beatlejuice', 1);
+INSERT INTO public.star VALUES (2, 123453123, 'red', 'millan', 1);
+INSERT INTO public.star VALUES (3, 123453123, 'red', 'bell', 1);
+INSERT INTO public.star VALUES (4, 123453123, 'red', 'laaw', 1);
+INSERT INTO public.star VALUES (5, 123453123, 'orange', 'lissa', 1);
+INSERT INTO public.star VALUES (6, 123453123, 'yellow', 'dobson', 1);
+
+
+--
+-- Name: blackhole_blackhole_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.blackhole_blackhole_id_seq', 3, true);
+
+
+--
+-- Name: galaxy_galaxy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 6, true);
+
+
+--
+-- Name: moon_moon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.moon_moon_id_seq', 20, true);
+
+
+--
+-- Name: planet_planet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.planet_planet_id_seq', 13, true);
+
+
+--
+-- Name: star_star_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.star_star_id_seq', 6, true);
+
+
+--
+-- Name: blackhole blackhole_name_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.blackhole
+    ADD CONSTRAINT blackhole_name_key UNIQUE (name);
+
+
+--
+-- Name: blackhole blackhole_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.blackhole
+    ADD CONSTRAINT blackhole_pkey PRIMARY KEY (blackhole_id);
+
+
+--
+-- Name: galaxy galaxy_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy
+    ADD CONSTRAINT galaxy_pkey PRIMARY KEY (galaxy_id);
+
+
+--
+-- Name: moon moon_name_code_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.moon
+    ADD CONSTRAINT moon_name_code_key UNIQUE (name_code);
+
+
+--
+-- Name: moon moon_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.moon
+    ADD CONSTRAINT moon_pkey PRIMARY KEY (moon_id);
+
+
+--
+-- Name: galaxy name_unique; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy
+    ADD CONSTRAINT name_unique UNIQUE (name);
+
+
+--
+-- Name: planet name_unique_planet; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT name_unique_planet UNIQUE (name);
+
+
+--
+-- Name: star name_unique_star; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT name_unique_star UNIQUE (name);
+
+
+--
+-- Name: planet planet_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT planet_pkey PRIMARY KEY (planet_id);
+
+
+--
+-- Name: star star_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT star_pkey PRIMARY KEY (star_id);
+
+
+--
+-- Name: star fk_galaxy; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT fk_galaxy FOREIGN KEY (galaxy_id) REFERENCES public.galaxy(galaxy_id);
+
+
+--
+-- Name: moon fk_planet; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.moon
+    ADD CONSTRAINT fk_planet FOREIGN KEY (planet_id) REFERENCES public.planet(planet_id);
+
+
+--
+-- Name: planet fk_star; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT fk_star FOREIGN KEY (star_id) REFERENCES public.star(star_id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
